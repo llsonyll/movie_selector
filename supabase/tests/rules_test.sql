@@ -176,3 +176,20 @@ select pg_temp.must_fail($$update rounds set winner_proposal_id = null$$, 'cambi
 reset role;
 
 \echo 'TODAS LAS PRUEBAS PASARON'
+
+-- El alta desde Supabase Auth (rol sin privilegios especiales) sigue creando el miembro,
+-- aunque handle_new_user ya no se pueda ejecutar por la API.
+\o
+create role auth_admin_test nologin;
+grant usage on schema auth to auth_admin_test;
+grant insert on auth.users to auth_admin_test;
+set role auth_admin_test;
+insert into auth.users (id, email, raw_user_meta_data) values ('00000000-0000-0000-0000-0000000000ff', 'nuevo@x.com', '{"full_name":"Nuevo"}');
+reset role;
+do $$ begin
+  assert exists (select 1 from members where display_name = 'Nuevo' and not is_organizer), 'el alta crea el miembro';
+  assert not has_function_privilege('anon', 'private.is_member()', 'execute'), 'anon no ejecuta is_member';
+  assert not has_function_privilege('authenticated', 'public.handle_new_user()', 'execute'), 'nadie llama handle_new_user';
+  raise notice 'ok  alta por Supabase Auth y funciones auxiliares fuera de la API';
+end $$;
+\echo 'ENDURECIMIENTO OK'
