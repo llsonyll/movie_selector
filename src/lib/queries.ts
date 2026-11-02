@@ -3,9 +3,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from './supabase'
 import type { Member, MovieDetail, Phase, Proposal, Round, Vote } from './types'
 
-const ROUND_SELECT =
-  '*, winner:proposals!rounds_winner_fk(id, tmdb_id, movie:movies(*), member:members(display_name))'
-const PROPOSAL_SELECT = '*, movie:movies(*), member:members(id, display_name, avatar_url)'
+// Entre proposals y members hay dos caminos (quién la propuso, y quiénes la votaron a través de votes), y
+// entre rounds y proposals también (la ganadora y las de la ronda): cada embed nombra su clave foránea.
+const MEMBER_OF_PROPOSAL = 'member:members!proposals_member_id_fkey'
+const ROUND_SELECT = `*, winner:proposals!rounds_winner_fk(id, tmdb_id, movie:movies(*), ${MEMBER_OF_PROPOSAL}(display_name))`
+const PROPOSAL_SELECT = `*, movie:movies(*), ${MEMBER_OF_PROPOSAL}(id, display_name, avatar_url)`
 
 /** Convierte errores de Postgres/Supabase en mensajes para la gente. */
 export function friendly(error: unknown): string {
