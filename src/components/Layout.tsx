@@ -40,7 +40,7 @@ export function Layout() {
               </NavLink>
             ))}
           </nav>
-          <Avatar member={me} />
+          <span className="max-sm:hidden"><Avatar member={me} /></span>
           <button type="button" onClick={signOut} title="Salir" aria-label="Salir" className="rounded-full p-1.5 text-stone-500 hover:bg-stone-800 hover:text-stone-200">
             <LogOut className="h-4 w-4" />
           </button>

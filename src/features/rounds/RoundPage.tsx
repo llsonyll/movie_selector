@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { CalendarDays, Clapperboard, Lock, Pencil, Plus, Trash2, Undo2, Vote } from 'lucide-react'
 import { toast } from 'sonner'
-import { Avatar, Button, Empty, Spinner, WhatsAppIcon, cx } from '@/components/ui'
+import { Avatar, Button, Empty, Spinner, cx } from '@/components/ui'
 import { useMe } from '@/features/auth/AuthProvider'
 import { ProposalCard, WinnerHero } from '@/features/proposals/ProposalCard'
 import { ProposeDialog } from '@/features/proposals/ProposeDialog'
@@ -13,8 +13,9 @@ import {
 } from '@/lib/queries'
 import { MAX_PROPOSALS } from '@/lib/tmdb'
 import type { Member, MemberRef, Phase, Proposal, Round } from '@/lib/types'
-import { shareMessage, whatsappLink } from '@/lib/whatsapp'
+import { shareMessage } from '@/lib/whatsapp'
 import { RoundForm } from './RoundForm'
+import { ShareRound } from './ShareRound'
 
 export function CurrentRoundPage() {
   const current = useCurrentRound()
@@ -71,19 +72,16 @@ function RoundView({ round }: { round: Round }) {
     <div>
       <PhaseSteps phase={round.phase} />
 
-      <header className="mt-5 flex flex-wrap items-end justify-between gap-4">
-        <div className="min-w-0">
-          <h1 className="font-display text-3xl text-stone-50 sm:text-4xl">{round.title}</h1>
-          {round.meeting_at && (
-            <p className="mt-1 inline-flex items-center gap-1.5 text-stone-400 first-letter:uppercase">
-              <CalendarDays className="h-4 w-4" /> {formatMeeting(round.meeting_at)}
-            </p>
-          )}
-        </div>
-        <a href={whatsappLink(message)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-2 text-sm font-semibold text-stone-950 hover:brightness-110">
-          <WhatsAppIcon /> {round.phase === 'closed' ? 'Anunciar en WhatsApp' : 'Compartir en WhatsApp'}
-        </a>
+      <header className="mt-5">
+        <h1 className="font-display text-3xl text-stone-50 sm:text-4xl">{round.title}</h1>
+        {round.meeting_at && (
+          <p className="mt-1 inline-flex items-center gap-1.5 text-stone-400 first-letter:uppercase">
+            <CalendarDays className="h-4 w-4" /> {formatMeeting(round.meeting_at)}
+          </p>
+        )}
       </header>
+
+      <ShareRound key={`${round.id}-${round.phase}`} round={round} message={message} isOrganizer={me.is_organizer} />
 
       {me.is_organizer && round.phase !== 'closed' && (
         <OrganizerBar round={round} proposals={list} votedCount={voters.data?.length ?? 0} activeCount={active.length} />
@@ -237,7 +235,7 @@ function OrganizerBar({ round, proposals, votedCount, activeCount }: { round: Ro
               const warn = proposals.length < 2 ? `\n\nOjo: hay solo ${plural(proposals.length, 'propuesta', 'propuestas')}.` : ''
               if (confirm(`¿Abrir la votación? Ya no se podrán agregar ni retirar propuestas.${warn}`))
                 update.mutate({ id: round.id, phase: 'voting' }, {
-                  onSuccess: () => toast.success('Votación abierta. Compártelo en el grupo para que voten.'),
+                  onSuccess: () => toast.success('Votación abierta'),
                   onError: fail,
                 })
             }}
@@ -267,7 +265,7 @@ function OrganizerBar({ round, proposals, votedCount, activeCount }: { round: Ro
               const note = missing > 0 ? `\n\nTodavía faltan ${plural(missing, 'persona', 'personas')} por votar.` : ''
               if (confirm(`¿Cerrar la votación y anunciar la ganadora?${note}\n\nSi hay empate, se sortea entre las empatadas.`))
                 close.mutate(round.id, {
-                  onSuccess: () => toast.success('¡Tenemos película! Anúnciala en el grupo.'),
+                  onSuccess: () => toast.success('¡Tenemos película!'),
                   onError: fail,
                 })
             }}
@@ -334,7 +332,7 @@ function NewRoundPanel({ onCancel }: { onCancel?: () => void }) {
     <section className="rounded-2xl bg-stone-900 p-5 ring-1 ring-stone-800 sm:p-6">
       <h1 className="font-display text-2xl text-stone-50">Abrir la ronda de esta semana</h1>
       <p className="mt-1 mb-5 text-sm text-stone-400">
-        Al abrirla, cada miembro puede proponer hasta {MAX_PROPOSALS} películas. Después la compartes por WhatsApp.
+        Al abrirla, cada miembro puede proponer hasta {MAX_PROPOSALS} películas. Después avisas al grupo con un toque.
       </p>
       <RoundForm
         submitLabel="Abrir ronda"
@@ -342,7 +340,7 @@ function NewRoundPanel({ onCancel }: { onCancel?: () => void }) {
         onCancel={onCancel}
         onSubmit={(v) =>
           create.mutate(v, {
-            onSuccess: () => toast.success('Ronda abierta. Compártela en el grupo.'),
+            onSuccess: () => toast.success('Ronda abierta'),
             onError: (e) => toast.error(friendly(e)),
           })
         }

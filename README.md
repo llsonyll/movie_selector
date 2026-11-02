@@ -8,10 +8,14 @@ con gusto) y el organizador **cierra la votación y anuncia la ganadora** con un
 
 | Fase | Quién | Qué pasa |
 |---|---|---|
-| **1. Propuestas** | El organizador abre la ronda (fecha de la reunión) y comparte el link en WhatsApp | Cada miembro busca en TMDB y propone hasta **2** películas con una línea de "por qué". Puede retirarlas o editar el comentario |
+| **1. Propuestas** | El organizador abre la ronda (fecha de la reunión) y avisa al grupo | Cada miembro busca en TMDB y propone hasta **2** películas con una línea de "por qué". Puede retirarlas o editar el comentario |
 | **2. Votación** | El organizador abre la votación | Cada miembro marca **todas** las que vería con gusto. Los votos son secretos hasta el cierre; se ve quién ya votó y a quién falta recordarle |
-| **3. Resultado** | El organizador cierra | Gana la más votada. Si hay empate en el primer lugar se **sortea** entre las empatadas (queda indicado). Se revelan los votos y aparece "Anunciar en WhatsApp" |
+| **3. Resultado** | El organizador cierra | Gana la más votada. Si hay empate en el primer lugar se **sortea** entre las empatadas (queda indicado). Se revelan los votos y el organizador anuncia la ganadora |
 
+- **Avisar al grupo**: después de abrir la ronda, abrir la votación o cerrarla, al organizador le aparece una tarjeta
+  "Avísale al grupo". En el celular abre el menú de compartir del teléfono (el grupo de WhatsApp sale entre los
+  recientes); en la computadora copia un mensaje corto y ofrece abrir WhatsApp Web. Cualquiera puede volver a
+  compartir con el botón "Compartir".
 - Solo hay **una ronda abierta a la vez**. Cuando no hay ronda abierta, la página de inicio muestra la última ganadora.
 - **Historial** con todas las películas elegidas; si alguien propone una que ya vieron, la página avisa (pero lo deja).
 - **Miembros**: entra cualquiera con el link y su cuenta de Google. El **primero en entrar queda como organizador**;
