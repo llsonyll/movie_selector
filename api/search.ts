@@ -1,5 +1,5 @@
 // GET /api/search?q=perfect+days → películas que coinciden (TMDB).
-import { handle } from './_tmdb'
+import { handle } from './_tmdb.js'
 
 export function GET(request: Request) {
   return handle(new URL(request.url), process.env)
